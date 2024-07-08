@@ -59,7 +59,11 @@ module TTY
         @env ||= {}
         @options = opts
 
-        @uuid = SecureRandom.uuid.split("-")[0]
+        @uuid = if opts[:uuid].is_a?(String)
+                  opts[:uuid]
+                else
+                  SecureRandom.uuid.split("-")[0]
+                end
         @only_output_on_error = opts.fetch(:only_output_on_error) { false }
         freeze
       end

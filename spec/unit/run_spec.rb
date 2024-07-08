@@ -80,6 +80,23 @@ RSpec.describe TTY::Command, "#run" do
     ])
   end
 
+  it "runs command successfully with logging with arbitrary uuid given locally" do
+    output = StringIO.new
+    command = TTY::Command.new(output: output)
+
+    arbitrary_uuid = "hello-command"
+    command.run(:echo, "hello", uuid: arbitrary_uuid)
+    output.rewind
+
+    lines = output.readlines
+    lines.last.gsub!(/\d+\.\d+/, "x")
+    expect(lines).to eq([
+      "[\e[32m#{arbitrary_uuid}\e[0m] Running \e[33;1mecho hello\e[0m\n",
+      "[\e[32m#{arbitrary_uuid}\e[0m] \thello\n",
+      "[\e[32m#{arbitrary_uuid}\e[0m] Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
+    ])
+  end
+
   it "runs command and fails with logging" do
     non_zero_exit = fixtures_path("non_zero_exit")
     output = StringIO.new

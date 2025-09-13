@@ -12,16 +12,14 @@ RSpec.describe TTY::Command, "#run" do
   end
 
   it "runs command successfully with logging" do
-    output = StringIO.new
     uuid = "xxxx"
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
-    command = TTY::Command.new(output: output)
 
-    command.run(:echo, "hello")
+    lines = retrieve_log_lines do |output|
+      command = TTY::Command.new(output: output)
+      command.run(:echo, "hello")
+    end
 
-    output.rewind
-    lines = output.readlines
-    lines.last.gsub!(/\d+\.\d+/, "x")
     expect(lines).to eq([
       "[\e[32m#{uuid}\e[0m] Running \e[33;1mecho hello\e[0m\n",
       "[\e[32m#{uuid}\e[0m] \thello\n",
@@ -31,16 +29,14 @@ RSpec.describe TTY::Command, "#run" do
   end
 
   it "runs command successfully with logging without color" do
-    output = StringIO.new
     uuid = "xxxx"
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
-    command = TTY::Command.new(output: output, color: false)
 
-    command.run(:echo, "hello")
+    lines = retrieve_log_lines do |output|
+      command = TTY::Command.new(output: output, color: false)
+      command.run(:echo, "hello")
+    end
 
-    output.rewind
-    lines = output.readlines
-    lines.last.gsub!(/\d+\.\d+/, "x")
     expect(lines).to eq([
       "[#{uuid}] Running echo hello\n",
       "[#{uuid}] \thello\n",
@@ -50,16 +46,14 @@ RSpec.describe TTY::Command, "#run" do
 
   it "runs command and fails with logging" do
     non_zero_exit = fixtures_path("non_zero_exit")
-    output = StringIO.new
     uuid = "xxxx"
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
-    command = TTY::Command.new(output: output)
 
-    command.run!("ruby #{non_zero_exit}")
+    lines = retrieve_log_lines do |output|
+      command = TTY::Command.new(output: output)
+      command.run!("ruby #{non_zero_exit}")
+    end
 
-    output.rewind
-    lines = output.readlines
-    lines.last.gsub!(/\d+\.\d+/, "x")
     expect(lines).to eq([
       "[\e[32m#{uuid}\e[0m] Running \e[33;1mruby #{non_zero_exit}\e[0m\n",
       "[\e[32m#{uuid}\e[0m] \tnooo\n",
@@ -113,17 +107,16 @@ RSpec.describe TTY::Command, "#run" do
     phased_output = fixtures_path("phased_output")
     uuid = "xxxx"
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
-    output = StringIO.new
-    cmd = TTY::Command.new(output: output)
 
-    out, err = cmd.run("ruby #{phased_output}")
+    out = err = nil
+    lines = retrieve_log_lines do |output|
+      cmd = TTY::Command.new(output: output)
+      out, err = cmd.run("ruby #{phased_output}")
+    end
 
     expect(out).to eq("." * 10)
     expect(err).to eq("")
 
-    output.rewind
-    lines = output.readlines
-    lines.last.gsub!(/\d+\.\d+/, "x")
     expect(lines).to eq([
       "[\e[32m#{uuid}\e[0m] Running \e[33;1mruby #{phased_output}\e[0m\n",
       "[\e[32m#{uuid}\e[0m] \t..........\n",
@@ -155,28 +148,22 @@ RSpec.describe TTY::Command, "#run" do
 
   context "with uuid option" do
     it "runs command successfully with logging without uuid set globally" do
-      output = StringIO.new
-      command = TTY::Command.new(output: output, uuid: false)
+      lines = retrieve_log_lines do |output|
+        command = TTY::Command.new(output: output, uuid: false)
+        command.run(:echo, "hello")
+      end
 
-      command.run(:echo, "hello")
-      output.rewind
-
-      lines = output.readlines
-      lines.last.gsub!(/\d+\.\d+/, "x")
       expect(lines).to eq(
         generic_colored_log_lines(prefix: nil)
       )
     end
 
     it "runs command successfully with logging without uuid set locally" do
-      output = StringIO.new
-      command = TTY::Command.new(output: output)
+      lines = retrieve_log_lines do |output|
+        command = TTY::Command.new(output: output)
+        command.run(:echo, "hello", uuid: false)
+      end
 
-      command.run(:echo, "hello", uuid: false)
-      output.rewind
-
-      lines = output.readlines
-      lines.last.gsub!(/\d+\.\d+/, "x")
       expect(lines).to eq(
         generic_colored_log_lines(prefix: nil)
       )
@@ -185,49 +172,54 @@ RSpec.describe TTY::Command, "#run" do
 
   context "with tag option" do
     it "prints the tag set globally" do
-      output = StringIO.new
       tag = "task"
-      command = TTY::Command.new(output: output, tag: tag)
 
-      command.run(:echo, "hello")
+      lines = retrieve_log_lines do |output|
+        command = TTY::Command.new(output: output, tag: tag)
+        command.run(:echo, "hello")
+      end
 
-      output.rewind
-      lines = output.readlines
-      lines.last.gsub!(/\d+\.\d+/, "x")
       expect(lines).to eq(
         generic_colored_log_lines(prefix: tag)
       )
     end
 
     it "prints the tag set locally" do
-      output = StringIO.new
       tag = "task"
-      command = TTY::Command.new(output: output)
 
-      command.run(:echo, "hello", tag: tag)
+      lines = retrieve_log_lines do |output|
+        command = TTY::Command.new(output: output)
+        command.run(:echo, "hello", tag: tag)
+      end
 
-      output.rewind
-      lines = output.readlines
-      lines.last.gsub!(/\d+\.\d+/, "x")
       expect(lines).to eq(
         generic_colored_log_lines(prefix: tag)
       )
     end
 
     it "prints the tag even if uuid is set to false" do
-      output = StringIO.new
       tag = "task"
-      command = TTY::Command.new(output: output, tag: tag, uuid: false)
 
-      command.run(:echo, "hello")
+      lines = retrieve_log_lines do |output|
+        command = TTY::Command.new(output: output, tag: tag, uuid: false)
+        command.run(:echo, "hello")
+      end
 
-      output.rewind
-      lines = output.readlines
-      lines.last.gsub!(/\d+\.\d+/, "x")
       expect(lines).to eq(
         generic_colored_log_lines(prefix: tag)
       )
     end
+  end
+
+  # Retrieves log lines from the output produced within the given block.
+  # Also replaces the execution time portion in the output with `x`.
+  def retrieve_log_lines
+    output = StringIO.new
+    yield(output)
+    output.rewind
+    lines = output.readlines
+    lines.last.gsub!(/\d+\.\d+/, "x")
+    lines
   end
 
   # Generates the expected log lines in colored mode, with/without `[prefix]`

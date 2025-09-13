@@ -123,6 +123,12 @@ module TTY
       def with_clean_env
       end
 
+      # The command tag
+      # @api public
+      def tag
+        @options[:tag]
+      end
+
       # Assemble full command
       #
       # @api public
@@ -140,7 +146,8 @@ module TTY
         {
           command: command,
           argv: argv,
-          uuid: uuid
+          uuid: uuid,
+          tag: @options[:tag]
         }
       end
 

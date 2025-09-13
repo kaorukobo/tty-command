@@ -9,6 +9,7 @@ module TTY
         def initialize(*)
           super
           @uuid = options.fetch(:uuid, true)
+          @tag  = options[:tag]
         end
 
         def print_command_start(cmd, *args)
@@ -46,10 +47,10 @@ module TTY
         def write(cmd, message, data = nil)
           cmd_set_uuid = cmd.options.fetch(:uuid, true)
           uuid_needed = cmd.options[:uuid].nil? ? @uuid : cmd_set_uuid
+          prefix = cmd.tag || @tag || (uuid_needed ? cmd.uuid : nil)
+
           out = []
-          if uuid_needed
-            out << "[#{decorate(cmd.uuid, :green)}] " unless cmd.uuid.nil?
-          end
+          out << "[#{decorate(prefix, :green)}] " if prefix
           out << "#{message}\n"
           target = (cmd.only_output_on_error && !data.nil?) ? data : output
           target << out.join

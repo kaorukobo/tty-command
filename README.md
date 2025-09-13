@@ -53,8 +53,9 @@ Or install it yourself as:
   * [2.3. Logging](#23-logging)
     * [2.3.1. Color](#231-color)
     * [2.3.2. UUID](#232-uuid)
-    * [2.3.3. Only output on error](#233-only-output-on-error)
-    * [2.3.4. Verbose](#234-verbose)
+    * [2.3.3. Tag](#233-tag)
+    * [2.3.4. Only output on error](#234-only-output-on-error)
+    * [2.3.5. Verbose](#235-verbose)
   * [2.4. Dry run](#24-dry-run)
   * [2.5. Wait](#25-wait)
   * [2.6. Test](#26-test)
@@ -221,7 +222,25 @@ cmd.run("echo hello", uuid: false)
 #  Finished in 0.003 seconds with exit status 0 (successful)
 ```
 
-#### 2.3.3 Only output on error
+#### 2.3.3 Tag
+
+You can add custom tags to command output using the `:tag` option. This is useful for categorizing or identifying a specific instance or run of a command:
+
+```ruby
+cmd = TTY::Command.new(tag: "deploy")
+cmd.run("echo hello")
+
+# or individually per command run:  
+cmd = TTY::Command.new
+cmd.run("echo hello", tag: "deploy")
+
+# =>
+#  [deploy] Running echo hello
+#      hello
+#  [deploy] Finished in 0.003 seconds with exit status 0 (successful)
+```
+
+#### 2.3.4 Only output on error
 
 When using a command that can fail, setting `:only_output_on_error` option to `true` hides the output if the command succeeds:
 
@@ -254,7 +273,7 @@ will also print the output.
 
 *Setting this option will cause the output to show at once, at the end of the command.*
 
-#### 2.3.4 Verbose
+#### 2.3.5 Verbose
 
 By default commands will produce warnings when, for example `pty` option is not supported on a given platform. You can switch off such warnings with `:verbose` option set to `false`.
 

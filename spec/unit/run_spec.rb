@@ -48,36 +48,98 @@ RSpec.describe TTY::Command, "#run" do
     ])
   end
 
-  it "runs command successfully with logging without uuid set globally" do
-    output = StringIO.new
-    command = TTY::Command.new(output: output, uuid: false)
+  # TODO:
+  #   Move "with xxx option" context to the end of
+  #   the describe block to follow RSpec style guide.
 
-    command.run(:echo, "hello")
-    output.rewind
+  context "with uuid option" do
+    it "runs command successfully with logging without uuid set globally" do
+      output = StringIO.new
+      command = TTY::Command.new(output: output, uuid: false)
 
-    lines = output.readlines
-    lines.last.gsub!(/\d+\.\d+/, "x")
-    expect(lines).to eq([
-      "Running \e[33;1mecho hello\e[0m\n",
-      "\thello\n",
-      "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
-    ])
+      command.run(:echo, "hello")
+      output.rewind
+
+      lines = output.readlines
+      lines.last.gsub!(/\d+\.\d+/, "x")
+      expect(lines).to eq([
+        "Running \e[33;1mecho hello\e[0m\n",
+        "\thello\n",
+        "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
+      ])
+    end
+
+    it "runs command successfully with logging without uuid set locally" do
+      output = StringIO.new
+      command = TTY::Command.new(output: output)
+
+      command.run(:echo, "hello", uuid: false)
+      output.rewind
+
+      lines = output.readlines
+      lines.last.gsub!(/\d+\.\d+/, "x")
+      expect(lines).to eq([
+        "Running \e[33;1mecho hello\e[0m\n",
+        "\thello\n",
+        "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
+      ])
+    end
   end
 
-  it "runs command successfully with logging without uuid set locally" do
-    output = StringIO.new
-    command = TTY::Command.new(output: output)
+  context "with tag option" do
+    it "prints the tag set globally" do
+      output = StringIO.new
+      tag = "task"
+      command = TTY::Command.new(output: output, tag: tag)
 
-    command.run(:echo, "hello", uuid: false)
-    output.rewind
+      command.run(:echo, "hello")
 
-    lines = output.readlines
-    lines.last.gsub!(/\d+\.\d+/, "x")
-    expect(lines).to eq([
-      "Running \e[33;1mecho hello\e[0m\n",
-      "\thello\n",
-      "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
-    ])
+      output.rewind
+      lines = output.readlines
+      lines.last.gsub!(/\d+\.\d+/, "x")
+      expect(lines).to eq([
+        "[\e[32m#{tag}\e[0m] Running \e[33;1mecho hello\e[0m\n",
+        "[\e[32m#{tag}\e[0m] \thello\n",
+        "[\e[32m#{tag}\e[0m] Finished in x seconds with exit status 0 " \
+        "(\e[32;1msuccessful\e[0m)\n"
+      ])
+    end
+
+    it "prints the tag set locally" do
+      output = StringIO.new
+      tag = "task"
+      command = TTY::Command.new(output: output)
+
+      command.run(:echo, "hello", tag: tag)
+
+      output.rewind
+      lines = output.readlines
+      lines.last.gsub!(/\d+\.\d+/, "x")
+      expect(lines).to eq([
+        "[\e[32m#{tag}\e[0m] Running \e[33;1mecho hello\e[0m\n",
+        "[\e[32m#{tag}\e[0m] \thello\n",
+        "[\e[32m#{tag}\e[0m] Finished in x seconds with exit status 0 " \
+        "(\e[32;1msuccessful\e[0m)\n"
+      ])
+    end
+
+    it "prints the tag even if uuid is set to false" do
+      output = StringIO.new
+      tag = "task"
+      command = TTY::Command.new(output: output, tag: tag, uuid: false)
+
+      command.run(:echo, "hello")
+
+      output.rewind
+      lines = output.readlines
+      lines.last.gsub!(/\d+\.\d+/, "x")
+      expect(lines).to eq([
+        "[\e[32m#{tag}\e[0m] Running \e[33;1mecho hello\e[0m\n",
+        "[\e[32m#{tag}\e[0m] \thello\n",
+        "[\e[32m#{tag}\e[0m] Finished in x seconds with exit status 0 " \
+        "(\e[32;1msuccessful\e[0m)\n"
+      ])
+    end
   end
 
   it "runs command and fails with logging" do

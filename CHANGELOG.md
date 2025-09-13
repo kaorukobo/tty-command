@@ -1,5 +1,10 @@
 # Change log
 
+## [Unreleased]
+
+### Added
+* Add :tag option to add custom tags to command output
+
 ## [v0.10.1] - 2021-02-14
 
 ### Fixed

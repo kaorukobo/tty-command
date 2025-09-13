@@ -55,14 +55,16 @@ module TTY
       @output = options.fetch(:output) { $stdout }
       @color   = options.fetch(:color) { true }
       @uuid    = options.fetch(:uuid) { true }
+      @tag     = options[:tag]
       @printer_name = options.fetch(:printer) { :pretty }
       @dry_run = options.fetch(:dry_run) { false }
-      @printer = use_printer(@printer_name, color: @color, uuid: @uuid)
+      @printer = use_printer(@printer_name, color: @color, uuid: @uuid, tag: @tag)
       @cmd_options = {}
       @cmd_options[:verbose] = options.fetch(:verbose, true)
       @cmd_options[:pty] = true if options[:pty]
       @cmd_options[:binmode] = true if options[:binmode]
       @cmd_options[:timeout] = options[:timeout] if options[:timeout]
+      @cmd_options[:tag] = @tag if @tag
     end
 
     # Start external executable in a child process

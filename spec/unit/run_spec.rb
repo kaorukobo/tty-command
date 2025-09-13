@@ -24,7 +24,7 @@ RSpec.describe TTY::Command, "#run" do
       "[\e[32m#{uuid}\e[0m] Running \e[33;1mecho hello\e[0m\n",
       "[\e[32m#{uuid}\e[0m] \thello\n",
       "[\e[32m#{uuid}\e[0m] Finished in x seconds with exit status 0 " \
-        "(\e[32;1msuccessful\e[0m)\n"
+      "(\e[32;1msuccessful\e[0m)\n"
     ])
   end
 
@@ -58,7 +58,7 @@ RSpec.describe TTY::Command, "#run" do
       "[\e[32m#{uuid}\e[0m] Running \e[33;1mruby #{non_zero_exit}\e[0m\n",
       "[\e[32m#{uuid}\e[0m] \tnooo\n",
       "[\e[32m#{uuid}\e[0m] Finished in x seconds with exit status 1 " \
-        "(\e[31;1mfailed\e[0m)\n"
+      "(\e[31;1mfailed\e[0m)\n"
     ])
   end
 
@@ -121,12 +121,12 @@ RSpec.describe TTY::Command, "#run" do
       "[\e[32m#{uuid}\e[0m] Running \e[33;1mruby #{phased_output}\e[0m\n",
       "[\e[32m#{uuid}\e[0m] \t..........\n",
       "[\e[32m#{uuid}\e[0m] Finished in x seconds with exit status 0 " \
-        "(\e[32;1msuccessful\e[0m)\n"
+      "(\e[32;1msuccessful\e[0m)\n"
     ])
   end
 
   it "does not persist environment variables",
-    unless: RSpec::Support::OS.windows? do
+     unless: RSpec::Support::OS.windows? do
     output = StringIO.new
     command = TTY::Command.new(output: output)
 
@@ -229,7 +229,7 @@ RSpec.describe TTY::Command, "#run" do
         "[\e[32m#{prefix}\e[0m] Running \e[33;1mecho hello\e[0m\n",
         "[\e[32m#{prefix}\e[0m] \thello\n",
         "[\e[32m#{prefix}\e[0m] Finished in x seconds with exit status 0 " \
-          "(\e[32;1msuccessful\e[0m)\n"
+        "(\e[32;1msuccessful\e[0m)\n"
       ]
     else
       [

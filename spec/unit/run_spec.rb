@@ -62,11 +62,9 @@ RSpec.describe TTY::Command, "#run" do
 
       lines = output.readlines
       lines.last.gsub!(/\d+\.\d+/, "x")
-      expect(lines).to eq([
-        "Running \e[33;1mecho hello\e[0m\n",
-        "\thello\n",
-        "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
-      ])
+      expect(lines).to eq(
+        generic_colored_log_lines(prefix: nil)
+      )
     end
 
     it "runs command successfully with logging without uuid set locally" do
@@ -78,11 +76,9 @@ RSpec.describe TTY::Command, "#run" do
 
       lines = output.readlines
       lines.last.gsub!(/\d+\.\d+/, "x")
-      expect(lines).to eq([
-        "Running \e[33;1mecho hello\e[0m\n",
-        "\thello\n",
-        "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
-      ])
+      expect(lines).to eq(
+        generic_colored_log_lines(prefix: nil)
+      )
     end
   end
 
@@ -97,12 +93,9 @@ RSpec.describe TTY::Command, "#run" do
       output.rewind
       lines = output.readlines
       lines.last.gsub!(/\d+\.\d+/, "x")
-      expect(lines).to eq([
-        "[\e[32m#{tag}\e[0m] Running \e[33;1mecho hello\e[0m\n",
-        "[\e[32m#{tag}\e[0m] \thello\n",
-        "[\e[32m#{tag}\e[0m] Finished in x seconds with exit status 0 " \
-        "(\e[32;1msuccessful\e[0m)\n"
-      ])
+      expect(lines).to eq(
+        generic_colored_log_lines(prefix: tag)
+      )
     end
 
     it "prints the tag set locally" do
@@ -115,12 +108,9 @@ RSpec.describe TTY::Command, "#run" do
       output.rewind
       lines = output.readlines
       lines.last.gsub!(/\d+\.\d+/, "x")
-      expect(lines).to eq([
-        "[\e[32m#{tag}\e[0m] Running \e[33;1mecho hello\e[0m\n",
-        "[\e[32m#{tag}\e[0m] \thello\n",
-        "[\e[32m#{tag}\e[0m] Finished in x seconds with exit status 0 " \
-        "(\e[32;1msuccessful\e[0m)\n"
-      ])
+      expect(lines).to eq(
+        generic_colored_log_lines(prefix: tag)
+      )
     end
 
     it "prints the tag even if uuid is set to false" do
@@ -133,12 +123,9 @@ RSpec.describe TTY::Command, "#run" do
       output.rewind
       lines = output.readlines
       lines.last.gsub!(/\d+\.\d+/, "x")
-      expect(lines).to eq([
-        "[\e[32m#{tag}\e[0m] Running \e[33;1mecho hello\e[0m\n",
-        "[\e[32m#{tag}\e[0m] \thello\n",
-        "[\e[32m#{tag}\e[0m] Finished in x seconds with exit status 0 " \
-        "(\e[32;1msuccessful\e[0m)\n"
-      ])
+      expect(lines).to eq(
+        generic_colored_log_lines(prefix: tag)
+      )
     end
   end
 
@@ -245,5 +232,23 @@ RSpec.describe TTY::Command, "#run" do
     output.rewind
     lines = output.readlines
     expect(lines[0]).to include("Running \e[33;1mecho hello\e[0m\n")
+  end
+
+  # Generates the expected log lines in colored mode, with/without `[prefix]`
+  def generic_colored_log_lines(prefix: nil)
+    if prefix
+      [
+        "[\e[32m#{prefix}\e[0m] Running \e[33;1mecho hello\e[0m\n",
+        "[\e[32m#{prefix}\e[0m] \thello\n",
+        "[\e[32m#{prefix}\e[0m] Finished in x seconds with exit status 0 " \
+        "(\e[32;1msuccessful\e[0m)\n"
+      ]
+    else
+      [
+        "Running \e[33;1mecho hello\e[0m\n",
+        "\thello\n",
+        "Finished in x seconds with exit status 0 (\e[32;1msuccessful\e[0m)\n"
+      ]
+    end
   end
 end

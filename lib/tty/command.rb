@@ -53,13 +53,12 @@ module TTY
     # @api public
     def initialize(**options)
       @output = options.fetch(:output) { $stdout }
-      @color   = options.fetch(:color) { true }
       @uuid    = options.fetch(:uuid) { true }
       @tag     = options[:tag]
       @printer_name = options.fetch(:printer) { :pretty }
       @dry_run = options.fetch(:dry_run) { false }
       @printer = use_printer(
-        @printer_name, color: @color, uuid: @uuid, tag: @tag
+        @printer_name, { uuid: @uuid, tag: @tag, **options.slice(:color) }
       )
       @cmd_options = {}
       @cmd_options[:verbose] = options.fetch(:verbose, true)

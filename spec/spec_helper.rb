@@ -40,6 +40,15 @@ module TestHelpers
       RUBY_PLATFORM == "java"
     end
   end
+
+  module EnableColorWithStringIO
+    def tty?
+      true
+    end
+
+    require "stringio"
+    StringIO.prepend self
+  end
 end
 
 RSpec.shared_context "sandbox" do

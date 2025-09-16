@@ -1,5 +1,10 @@
 # Change log
 
+## [Unreleased]
+
+### Fixed
+* Fix "can't alloc thread" error in Command#run from non-main thread's rescue/ensure block 
+
 ## [v0.10.1] - 2021-02-14
 
 ### Fixed

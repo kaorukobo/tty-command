@@ -163,7 +163,7 @@ module TTY
       #
       # @api private
       def read_stream(stream, handler)
-        Thread.new do
+        Thread.start do
           if Thread.current.respond_to?(:report_on_exception)
             Thread.current.report_on_exception = false
           end

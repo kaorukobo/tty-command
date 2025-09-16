@@ -20,9 +20,12 @@ module TTY
         def initialize(output, options = {})
           @output  = output
           @options = options
-          @enabled = options.fetch(:color, true)
-          @color   = ::Pastel.new(enabled: @enabled)
+          @enabled = options.fetch(
+            :color,
+            output.respond_to?(:tty?) && output.tty?
+          )
 
+          @color = ::Pastel.new(enabled: @enabled)
           @out_data = ""
           @err_data = ""
         end

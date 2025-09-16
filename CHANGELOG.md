@@ -1,5 +1,10 @@
 # Change log
 
+## [Unreleased]
+
+### Changed
+* Enable color by default only when output is a TTY
+
 ## [v0.10.1] - 2021-02-14
 
 ### Fixed

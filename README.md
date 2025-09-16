@@ -185,17 +185,16 @@ logger = Logger.new("dev.log")
 cmd = TTY::Command.new(output: logger)
 ```
 
-You can force the printer to always in print in color by passing the `:color` option:
-
-```ruby
-cmd = TTY::Command.new(color: true)
-```
-
 If the default printers don't meet your needs you can always create [a custom printer](#34-custom-printer)
 
 #### 2.3.1 Color
 
-When using printers you can switch off coloring by using `:color` option set to `false`.
+By default, color output is enabled when the output destination is a TTY (terminal). You can explicitly control coloring behavior by using the `:color` option:
+
+```ruby
+cmd = TTY::Command.new(color: true)   # Force enable coloring
+cmd = TTY::Command.new(color: false)  # Disable coloring
+```
 
 #### 2.3.2 UUID
 
